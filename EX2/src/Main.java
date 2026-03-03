@@ -1,0 +1,102 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
+
+
+public class Main {
+    static List<Student> list = new ArrayList<>();
+    static StudentManager<Student> studentManager = new StudentManager<>(list);
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        int choice;
+
+        do {
+            System.out.println("\n===== QUẢN LÝ SINH VIÊN =====");
+            System.out.println("1. Thêm sinh viên mới");
+            System.out.println("2. Hiển thị danh sách sinh viên");
+            System.out.println("3. Điểm trung bình: ");
+            System.out.println("0. Thoát chương trình");
+            System.out.print("Nhập lựa chọn của bạn: ");
+
+            choice = sc.nextInt();
+            sc.nextLine();
+
+            switch (choice) {
+                case 1:
+                    addStudent();
+                    break;
+                case 2:
+                    displayStudents();
+                    break;
+                case 3:
+                    caculateAverageGpa();
+                    break;
+                case 0:
+                    System.out.println("Đã thoát chương trình. Hẹn gặp lại!");
+                    break;
+                default:
+                    System.out.println("Lựa chọn không hợp lệ, vui lòng nhập lại!");
+            }
+        } while (choice != 0);
+
+    }
+
+    static void addStudent() {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Nhập MSSV: ");
+        String mssv = sc.nextLine();
+        System.out.print("Nhập Tên: ");
+        String name = sc.nextLine();
+        System.out.print("Nhập điểm GPA: ");
+        double gpa = sc.nextDouble();
+        sc.nextLine();
+
+        Student newStudent = new Student(mssv, name, gpa);
+        studentManager.add(newStudent);
+        System.out.println("-> Thêm sinh viên thành công!");
+    }
+
+    static void displayStudents(){
+        System.out.println("--- Danh sách sinh viên ---");
+        studentManager.getAll();
+    }
+
+    static double averageGpa(){
+        double sum = 0;
+        int num = 0;
+        for(Student st : studentManager.data){
+            sum += st.getGpa();
+            num += 1;
+        }
+
+        double result = sum / num;
+         return  result;
+    }
+
+    static void caculateAverageGpa() {
+        CompletableFuture<Double> future =
+                CompletableFuture.supplyAsync(() -> {
+                    try {
+                        Thread.sleep(1000); // giả lập xử lý lâu
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    return averageGpa();
+                });
+
+        future.thenAccept(result ->
+                System.out.println("Điểm trung bình của hệ thống: " + result)
+        );
+
+        System.out.println("Main thread continues...");
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
