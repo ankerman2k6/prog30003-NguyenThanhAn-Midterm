@@ -1,0 +1,81 @@
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
+
+public class Main {
+    static List<Student> list = new ArrayList<>();
+    static StudentManager<Student> studentManager = new StudentManager<>(list);
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        int choice;
+
+        do {
+            System.out.println("\n===== QUẢN LÝ SINH VIÊN =====");
+            System.out.println("1. Thêm sinh viên mới");
+            System.out.println("2. Hiển thị danh sách sinh viên");
+            System.out.println("3. Danh sách GPA > 3.2 và giảm dần ");
+            System.out.println("0. Thoát chương trình");
+            System.out.print("Nhập lựa chọn của bạn: ");
+
+            choice = sc.nextInt();
+            sc.nextLine();
+
+            switch (choice) {
+                case 1:
+                    addStudent();
+                    break;
+                case 2:
+                    displayStudents();
+                    break;
+                case 3:
+                    sortGpa();
+                    break;
+                case 0:
+                    System.out.println("Đã thoát chương trình. Hẹn gặp lại!");
+                    break;
+                default:
+                    System.out.println("Lựa chọn không hợp lệ, vui lòng nhập lại!");
+            }
+        } while (choice != 0);
+
+    }
+
+    static void addStudent() {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Nhập MSSV: ");
+        String mssv = sc.nextLine();
+        System.out.print("Nhập Tên: ");
+        String name = sc.nextLine();
+        System.out.print("Nhập điểm GPA: ");
+        double gpa = sc.nextDouble();
+        sc.nextLine();
+
+        Student newStudent = new Student(mssv, name, gpa);
+        studentManager.add(newStudent);
+        System.out.println("-> Thêm sinh viên thành công!");
+    }
+
+    static void displayStudents(){
+        System.out.println("--- Danh sách sinh viên ---");
+        studentManager.getAll();
+    }
+
+    static void sortGpa(){
+        List<Student> ls = studentManager.data
+                .stream()
+                .filter(n-> n.getGpa() >= 3.2)
+                .sorted(Comparator.comparingDouble(Student::getGpa).reversed())
+                .collect(Collectors.toList());
+
+        System.out.println("Danh sách sinh viên có điểm GPA giảm dần là: "+ ls);
+
+    }
+
+
+}
